@@ -1,0 +1,42 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd">
+
+    <changeSet id="create_avia_ticket_table" author="vstkachenko">
+        <createTable tableName="avia_ticket">
+            <column name="created_by" type="TEXT"/>
+            <column name="modified_by" type="TEXT"/>
+            <column name="created_at" type="TIMESTAMP(6) WITH TIME ZONE"/>
+            <column name="modified_at" type="TIMESTAMP(6) WITH TIME ZONE"/>
+            <column name="price_was_changed" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="next_status_in_process" type="ticket_status"/>
+            <column name="pnr" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="ticket_status">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ticket_number" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ticket_way" type="ticket_way">
+                <constraints nullable="false"/>
+            </column>
+            <column name="external_id" type="JSONB"/>
+            <column name="files" type="JSONB">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ticket_price" type="JSONB"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

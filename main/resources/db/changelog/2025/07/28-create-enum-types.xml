@@ -1,0 +1,106 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd">
+
+    <changeSet id="create_enum_types" author="vstkachenko">
+        <sql>
+            DROP TYPE IF EXISTS ticket_status;
+            CREATE TYPE ticket_status AS ENUM (
+                'BOOKING_CREATED',
+                'BOOKING_CANCELED',
+                'BOOKING_EXPIRED',
+                'ISSUED',
+                'REFUND',
+                'ERROR'
+            );
+        </sql>
+
+        <sql>
+            DROP TYPE IF EXISTS ticket_way;
+            CREATE TYPE ticket_way AS ENUM (
+                'WAY_THERE',
+                'WAY_BACK',
+                'ROUND_TRIP',
+                'COMPLEX_ROUTE'
+            );
+        </sql>
+
+        <sql>
+            DROP TYPE IF EXISTS flight_class;
+            CREATE TYPE flight_class AS ENUM (
+                'ECONOMY',
+                'PREMIUM_ECONOMY',
+                'BUSINESS',
+                'PREMIUM_BUSINESS',
+                'FIRST',
+                'PREMIUM_FIRST',
+                'SUBSIDIZED'
+            );
+        </sql>
+
+        <sql>
+            DROP TYPE IF EXISTS flight_tariff;
+            CREATE TYPE flight_tariff AS ENUM (
+                'BEST_LIGHT',
+                'BEST_MEDIUM',
+                'BEST_PRO',
+                'BEST_SUPER_PRO'
+            );
+        </sql>
+
+        <sql>
+            DROP TYPE IF EXISTS order_status;
+            CREATE TYPE order_status AS ENUM (
+                'NONE',
+                'CANCELED',
+                'IN_PROGRESS',
+                'PAID',
+                'COMPLETED'
+            );
+        </sql>
+
+        <sql>
+            DROP TYPE IF EXISTS provider;
+            CREATE TYPE provider AS ENUM (
+                'MYAGENT_AVIA',
+                'MYAGENT_HOTEL',
+                'MYAGENT_RZD',
+                'OSTROVOK_HOTEL',
+                'IM_RZD',
+                'VIPSERVICE_AVIA',
+                'IWAY_TRANSFER'
+            );
+        </sql>
+
+        <sql>
+            DROP TYPE IF EXISTS accounting_provider;
+            CREATE TYPE accounting_provider AS ENUM (
+                'MYAGENT_AVIA',
+                'VIPSERVICE_AVIA',
+                'EVROCONTACTPLUS_AVIA',
+                'OSTROVOK_AVIA',
+                'IWAY_TRANSFER',
+                'MYAGENT_RZD',
+                'IM_RZD',
+                'OSTROVOK_HOTEL',
+                'MYAGENT_HOTEL',
+                'UNKNOWN'
+            );
+        </sql>
+
+        <sql>
+            DROP TYPE IF EXISTS product_status;
+            CREATE TYPE product_status AS ENUM (
+                'NEW',
+                'BOOKING_CREATED',
+                'ISSUED',
+                'BOOKING_CANCELED',
+                'ERROR',
+                'REFUND',
+                'BOOKING_EXPIRED'
+            );
+        </sql>
+    </changeSet>
+</databaseChangeLog>

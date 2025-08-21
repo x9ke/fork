@@ -1,0 +1,125 @@
+openapi: 3.0.0
+
+info:
+  title: Notification email API
+  version: 1.0.0
+  description: Сервис для отправки уведомлений
+
+tags:
+  - name: NotificationEmail
+    description: Notification email API
+
+servers:
+  - url: http://localhost:8065
+
+paths:
+  /api/v1/notification/email/send:
+    post:
+      tags: [ Notification email ]
+      summary: Сохранение аналитических данных
+      description: Сохраняет массив аналитических отчетов о командировках и заказах
+      operationId: sendEmail
+      parameters:
+        - in: header
+          name: X-Request-Id
+          schema:
+            type: string
+          required: true
+          description: Uid запроса
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendEmail'
+      responses:
+        '204':
+          description: Данные успешно приняты для отправки
+        '400':
+          description: Невалидные входные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Необходима аутентификация
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    SendEmail:
+      type: object
+      properties:
+        to:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recipient'
+          description: Список основных получателей
+        cc:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recipient'
+          description: Список копий (CC)
+        bcc:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recipient'
+          description: Список скрытых копий (BCC)
+        data:
+          type: object
+          additionalProperties:
+            type: string
+          description: Данные для подстановки в шаблон письма
+        templateType:
+          $ref: '#/components/schemas/EmailTemplateType'
+      required:
+        - to
+        - data
+        - templateType
+      description: Запрос на отправку писем
+
+    Recipient:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Имя получателя
+        email:
+          type: string
+          description: Email адрес получателя
+      required:
+        - name
+        - email
+      description: Получатель
+
+    EmailTemplateType:
+      type: string
+      enum:
+        - B2B_PASSWORD_CHANGE
+        - B2B_ACCOUNT_ACTIVATE
+
+        - B2C_ACTIVATE_ACCOUNT
+        - B2C_FORGOT_PASSWORD
+      description: Тип шаблона электронного письма
+
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: Код ошибки
+        message:
+          type: string
+          description: Сообщение об ошибке
+      required:
+        - code
+        - message

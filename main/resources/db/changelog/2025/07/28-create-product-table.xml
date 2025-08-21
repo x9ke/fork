@@ -1,0 +1,45 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd">
+
+    <changeSet id="create_product_table" author="vstkachenko">
+        <createTable tableName="product">
+            <column name="created_by" type="TEXT"/>
+            <column name="modified_by" type="TEXT"/>
+            <column name="created_at" type="TIMESTAMP(6) WITH TIME ZONE"/>
+            <column name="modified_at" type="TIMESTAMP(6) WITH TIME ZONE"/>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="order_id" type="UUID"/>
+            <column name="product_type" type="VARCHAR(31)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="provider" type="provider">
+                <constraints nullable="false"/>
+            </column>
+            <column name="provider_for_accounting" type="accounting_provider">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="product_status">
+                <constraints nullable="false"/>
+            </column>
+            <column name="cities" type="JSONB">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+                constraintName="fk_product_order_id__orders"
+                baseTableName="product"
+                baseColumnNames="order_id"
+                referencedTableName="orders"
+                referencedColumnNames="id"
+        />
+    </changeSet>
+</databaseChangeLog>

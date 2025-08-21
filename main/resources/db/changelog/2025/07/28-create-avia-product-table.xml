@@ -1,0 +1,47 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd">
+
+    <changeSet id="create_avia_product_table" author="vstkacheko">
+        <createTable tableName="avia_product">
+            <column name="complex_route" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="flight_id" type="UUID"/>
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="external_billing_number" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="external_order_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reservation_info" type="JSONB"/>
+        </createTable>
+
+        <addForeignKeyConstraint
+                constraintName="fk_avia_product_flight_id__flight"
+                baseTableName="avia_product"
+                baseColumnNames="flight_id"
+                referencedTableName="flight"
+                referencedColumnNames="id"
+        />
+
+        <addForeignKeyConstraint
+                constraintName="fk_avia_product_id__product"
+                baseTableName="avia_product"
+                baseColumnNames="id"
+                referencedTableName="product"
+                referencedColumnNames="id"
+        />
+
+        <addUniqueConstraint
+                tableName="avia_product"
+                columnNames="flight_id"
+                constraintName="uq_avia_product_flight_id"
+        />
+    </changeSet>
+</databaseChangeLog>

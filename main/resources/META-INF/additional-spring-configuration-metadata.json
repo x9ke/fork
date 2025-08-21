@@ -1,0 +1,127 @@
+{
+  "groups": [
+    {
+      "name": "app",
+      "type": "com.du.besttrip.ordersb2c.config.properties.AppProperties",
+      "sourceType": "com.du.besttrip.ordersb2c.config.properties.AppProperties"
+    },
+    {
+      "name": "app.client",
+      "type": "com.du.besttrip.ordersb2c.config.properties.ApplicationClientProperties",
+      "sourceType": "com.du.besttrip.ordersb2c.config.properties.ApplicationClientProperties"
+    },
+    {
+      "name": "app.client.clients",
+      "type": "java.util.Map<java.lang.String, com.du.besttrip.ordersb2c.config.properties.ApplicationClientProperties.ApplicationClientConfiguration>",
+      "sourceType": "com.du.besttrip.ordersb2c.config.properties.ApplicationClientProperties",
+      "description": "Configuration for specific Feign clients"
+    }
+  ],
+  "properties": [
+    {
+      "name": "app.disable-auth",
+      "type": "java.lang.Boolean",
+      "description": "Whether to disable authentication",
+      "sourceType": "com.du.besttrip.ordersb2c.config.properties.AppProperties"
+    },
+    {
+      "name": "app.app-token",
+      "type": "java.lang.String",
+      "description": "Application token for authentication",
+      "sourceType": "com.du.besttrip.ordersb2c.config.properties.AppProperties"
+    },
+    {
+      "name": "app.client.default-to-properties",
+      "type": "java.lang.Boolean",
+      "description": "Whether to default to properties configuration",
+      "defaultValue": true,
+      "sourceType": "com.du.besttrip.ordersb2c.config.properties.ApplicationClientProperties"
+    },
+    {
+      "name": "app.client.default-config",
+      "type": "java.lang.String",
+      "description": "Default configuration name",
+      "defaultValue": "default",
+      "sourceType": "com.du.besttrip.ordersb2c.config.properties.ApplicationClientProperties"
+    },
+    {
+      "name": "app.client.decode-slash",
+      "type": "java.lang.Boolean",
+      "description": "Whether to decode slash characters in URLs",
+      "defaultValue": true,
+      "sourceType": "com.du.besttrip.ordersb2c.config.properties.ApplicationClientProperties"
+    },
+    {
+      "name": "app.client.remove-trailing-slash",
+      "type": "java.lang.Boolean",
+      "description": "Whether to remove trailing slashes from URLs",
+      "defaultValue": false,
+      "sourceType": "com.du.besttrip.ordersb2c.config.properties.ApplicationClientProperties"
+    },
+    {
+      "name": "app.client.clients",
+      "type": "java.util.Map<java.lang.String, com.du.besttrip.ordersb2c.config.properties.ApplicationClientProperties.ApplicationClientConfiguration>",
+      "sourceType": "com.du.besttrip.ordersb2c.config.properties.ApplicationClientProperties",
+      "description": "Configuration for specific Feign clients"
+    },
+    {
+      "name": "app.client.clients.*.logger-level",
+      "type": "feign.Logger",
+      "description": "Feign logging level",
+      "sourceType": "com.du.besttrip.ordersb2c.config.properties.ApplicationClientProperties$ApplicationClientConfiguration"
+    },
+    {
+      "name": "app.client.clients.*.connect-timeout",
+      "type": "java.lang.Integer",
+      "description": "Connection timeout in milliseconds",
+      "sourceType": "com.du.besttrip.ordersb2c.config.properties.ApplicationClientProperties$ApplicationClientConfiguration"
+    },
+    {
+      "name": "app.client.clients.*.read-timeout",
+      "type": "java.lang.Integer",
+      "description": "Read timeout in milliseconds",
+      "sourceType": "com.du.besttrip.ordersb2c.config.properties.ApplicationClientProperties$ApplicationClientConfiguration"
+    },
+    {
+      "name": "app.client.clients.*.url",
+      "type": "java.lang.String",
+      "description": "Base URL for the client",
+      "sourceType": "com.du.besttrip.ordersb2c.config.properties.ApplicationClientProperties$ApplicationClientConfiguration"
+    },
+    {
+      "name": "app.client.clients.*.api-token",
+      "type": "java.lang.String",
+      "description": "API token for authentication",
+      "sourceType": "com.du.besttrip.ordersb2c.config.properties.ApplicationClientProperties$ApplicationClientConfiguration"
+    },
+    {
+      "name": "app.client.clients.*.follow-redirects",
+      "type": "java.lang.Boolean",
+      "description": "Whether to follow redirects",
+      "sourceType": "com.du.besttrip.ordersb2c.config.properties.ApplicationClientProperties$ApplicationClientConfiguration"
+    }
+  ],
+  "hints": [
+    {
+      "name": "app.client.clients.*.logger-level",
+      "values": [
+        {
+          "value": "NONE",
+          "description": "No logging"
+        },
+        {
+          "value": "BASIC",
+          "description": "Log only request method and URL"
+        },
+        {
+          "value": "HEADERS",
+          "description": "Log request headers"
+        },
+        {
+          "value": "FULL",
+          "description": "Log full request/response"
+        }
+      ]
+    }
+  ]
+}

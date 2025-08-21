@@ -1,0 +1,115 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd">
+
+    <changeSet id="create_flight_segment_table" author="vstkachenko">
+        <createTable tableName="flight_segment">
+            <column name="baggage_available" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="flight_duration_minutes" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="seats_available" type="INTEGER"/>
+            <column name="transfer_duration_minutes" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="arrival_time" type="TIMESTAMP(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="departure_time" type="TIMESTAMP(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="leg_id" type="UUID"/>
+            <column name="arrival_terminal" type="VARCHAR(255)"/>
+            <column name="departure_terminal" type="VARCHAR(255)"/>
+            <column name="flight_class" type="flight_class">
+                <constraints nullable="false"/>
+            </column>
+            <column name="flight_number" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="arrival_airport_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="arrival_airport_code" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="arrival_airport_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="arrival_city_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="arrival_city_code" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="arrival_city_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="arrival_country_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="arrival_country_code" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="arrival_country_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="baggage_info" type="JSONB"/>
+            <column name="cabin_baggage_info" type="JSONB"/>
+            <column name="departure_airport_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="departure_airport_code" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="departure_airport_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="departure_city_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="departure_city_code" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="departure_city_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="departure_country_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="departure_country_code" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="departure_country_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="operating_carrier_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="operating_carrier_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tech_stops" type="JSONB">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+                constraintName="fk_flight_segment_leg_id__flight_leg"
+                baseTableName="flight_segment"
+                baseColumnNames="leg_id"
+                referencedTableName="flight_leg"
+                referencedColumnNames="id"
+        />
+    </changeSet>
+</databaseChangeLog>

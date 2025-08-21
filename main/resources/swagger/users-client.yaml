@@ -1,0 +1,1874 @@
+openapi: 3.0.3
+
+info:
+  title: User API
+  description: API для аутентификации пользователей, регистрации и управления профилями и путешествиями
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8077/api/v1
+    description: Traveler API
+
+tags:
+  - name: Auth
+    description: API для аутентификации
+  - name: Users
+    description: API для регистрации и управления профилями
+  - name: Traveler
+    description: API для работы с путешественниками
+  - name: Document
+    description: API для работы с документами путешественника
+  - name: BonusCard
+    description: API для работы с бонусными картами путешественника
+  - name: Utils
+    description: API общего назначения
+  - name: Geo
+    description: Geo API
+
+paths:
+  /auth/loginWeb:
+    post:
+      tags: [ Auth ]
+      summary: Аутентификации для web
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+      responses:
+        '200':
+          description: Успешная аутентификация
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: BAD_REQUEST, error code [ VALIDATION_ERROR ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '401':
+          description: UNAUTHORIZED, error code [ BAD_CREDENTIALS ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '403':
+          description: FORBIDDEN, error code [ LOCKED ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+  /auth/loginMobile:
+    post:
+      tags: [ Auth ]
+      summary: Аутентификации для mobile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+      responses:
+        '200':
+          description: Успешная аутентификация
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: BAD_REQUEST, error code [ VALIDATION_ERROR ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '401':
+          description: UNAUTHORIZED, error code [ BAD_CREDENTIALS ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '403':
+          description: FORBIDDEN, error code [ LOCKED ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+  /auth/logout:
+    post:
+      tags: [ Auth ]
+      summary: Выйти из системы
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Успешно вышел из системы
+        '401':
+          description: UNAUTHORIZED, error code [ UNAUTHORIZED ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+  /users/register:
+    post:
+      tags: [ Users ]
+      summary: Зарегистрировать нового пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PreRegistrationRequest'
+      responses:
+        '200':
+          description: Регистрация пользователя инициирована
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisteResponse'
+        '400':
+          description: BAD_REQUEST, error code [ VALIDATION_ERROR ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '403':
+          description: FORBIDDEN, error code [ LOCKED ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '409':
+          description: CONFLICT, error code [ USER_ALREADY_EXISTS ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+  /users/validateActivateLink:
+    post:
+      tags: [ Users ]
+      summary: Подтвердить ссылку активации
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidateActivateLinkRequest'
+      responses:
+        '204':
+          description: Ссылка активации действительна
+        '400':
+          description: BAD_REQUEST, error code [ ACTIVATE_LINK_NOT_VALID ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+  /users/setPasswordAndLoginWeb:
+    post:
+      tags: [ Users ]
+      summary: Установить пароль и логин для web
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetPasswordRequest'
+      responses:
+        '200':
+          description: Пароль установлен и пользователь вошел в систему
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: BAD_REQUEST, error code [ VALIDATION_ERROR, ACTIVATE_LINK_NOT_VALID ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+  /users/setPasswordAndLoginMobile:
+    post:
+      tags: [ Users ]
+      summary: Установить пароль и логин для mobile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetPasswordRequest'
+      responses:
+        '200':
+          description: Пароль установлен и пользователь вошел в систему
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: BAD_REQUEST, error code [ VALIDATION_ERROR, ACTIVATE_LINK_NOT_VALID ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+  /users/forgotPassword:
+    post:
+      tags: [ Users ]
+      summary: Сброс пароля
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordRequest'
+      responses:
+        '200':
+          description: Инициирован сброс пароля
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForgotPasswordResponse'
+        '400':
+          description: BAD_REQUEST, error code [ VALIDATION_ERROR ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '403':
+          description: FORBIDDEN, error code [ LOCKED ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+  /users/validateForgotPasswordLink:
+    post:
+      tags: [ Users ]
+      summary: Подтвердить ссылку для сброса пароля
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidateForgotPasswordRequest'
+      responses:
+        '204':
+          description: Ссылка для сброса пароля действительна
+        '400':
+          description: BAD_REQUEST, error code [ VALIDATION_ERROR, FORGOT_PASSWORD_LINK_NOT_VALID ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+  /users/updatePasswordAndLoginWeb:
+    post:
+      tags: [ Users ]
+      summary: Обновите пароль и логин для web
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePasswordAndLoginRequest'
+      responses:
+        '200':
+          description: Пароль обновлен, и пользователь вошел в систему
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: BAD_REQUEST, error code [ VALIDATION_ERROR, FORGOT_PASSWORD_LINK_NOT_VALID ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+  /users/updatePasswordAndLoginMobile:
+    post:
+      tags: [ Users ]
+      summary: Обновите пароль и логин для mobile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePasswordAndLoginRequest'
+      responses:
+        '200':
+          description: Пароль обновлен, и пользователь вошел в систему
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: BAD_REQUEST, error code [ VALIDATION_ERROR, FORGOT_PASSWORD_LINK_NOT_VALID ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+  /users/{uid}/updatePassword:
+    put:
+      tags: [ Users ]
+      summary: Обновить пароль пользователя
+      parameters:
+        - name: uid
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePasswordRequest'
+      responses:
+        '204':
+          description: Password updated successfully
+        '400':
+          description: BAD_REQUEST, error code [ VALIDATION_ERROR, BAD_CREDENTIALS ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '401':
+          description: UNAUTHORIZED, error code [ UNAUTHORIZED ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+  /users/{uid}:
+    get:
+      tags: [ Users ]
+      summary: Получить пользователя по ID
+      parameters:
+        - name: uid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Данные пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401':
+          description: UNAUTHORIZED, error code [ UNAUTHORIZED ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+    put:
+      tags: [ Users ]
+      summary: Обновить профиль пользователя
+      parameters:
+        - name: uid
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: Данные пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: BAD_REQUEST, error code [ VALIDATION_ERROR ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '401':
+          description: UNAUTHORIZED, error code [ UNAUTHORIZED ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '409':
+          description: CONFLICT, error code [ EMAIL_ALREADY_EXISTS, PHONE_ALREADY_EXISTS ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+  /users/{uid}/delete:
+    post:
+      tags: [ Users ]
+      summary: Удалить пользователя
+      parameters:
+        - name: uid
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteUserRequest'
+      responses:
+        '204':
+          description: Пользователь успешно удален
+        '400':
+          description: BAD_REQUEST, error code [ VALIDATION_ERROR ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '401':
+          description: UNAUTHORIZED, error code [ UNAUTHORIZED, BAD_CREDENTIALS ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+  /users/userInfo:
+    get:
+      tags: [ Users ]
+      summary: Получить информацию о текущем пользователе
+      responses:
+        '200':
+          description: Информация о текущем пользователе
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInfoResponse'
+        '401':
+          description: UNAUTHORIZED, error code [ UNAUTHORIZED ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+  /users/isEmailExist/{email}:
+    get:
+      tags: [ Users ]
+      summary: Проверить, существует ли электронная почта
+      parameters:
+        - name: email
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Статус существования электронной почты
+          content:
+            application/json:
+              schema:
+                type: boolean
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+  /users/isPhoneExist/{phone}:
+    get:
+      tags: [ Users ]
+      summary: Проверить, существует ли телефон
+      parameters:
+        - name: phone
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Статус наличия телефона
+          content:
+            application/json:
+              schema:
+                type: boolean
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+  /users/{uid}/travelers:
+    get:
+      tags: [ Users ]
+      summary: Получить список путешественников пользователя
+      description: Возвращает массив всех путешественников, связанных с пользователем.
+      parameters:
+        - name: uid
+          in: path
+          description: Уникальный идентификатор пользователя
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "79efa225-d5e0-439b-9ac2-9ba0448e8019"
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Traveler'
+        '401':
+          description: UNAUTHORIZED, error code [ UNAUTHORIZED ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+    post:
+      tags: [ Users ]
+      summary: Создать нового путешественника
+      description: Создает нового путешественника для указанного пользователя
+      parameters:
+        - name: uid
+          in: path
+          description: Уникальный идентификатор пользователя
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "79efa225-d5e0-439b-9ac2-9ba0448e8019"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TravelerCreate'
+      responses:
+        '201':
+          description: Путешественник успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Traveler'
+        '400':
+          description: BAD_REQUEST, error code [ VALIDATION_ERROR ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '401':
+          description: UNAUTHORIZED, error code [ UNAUTHORIZED ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+        '409':
+          description: CONFLICT, error code [ LIMIT_EXCEEDED ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+  /travelers/{uid}:
+    get:
+      tags: [ Traveler ]
+      summary: Получить информацию о путешественнике
+      description: Возвращает детальную информацию о путешественнике.
+      parameters:
+        - name: uid
+          in: path
+          description: Уникальный идентификатор путешественника
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "48abf1fd-6073-4450-bb7b-4e2754db4fc9"
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Traveler'
+        '401':
+          description: UNAUTHORIZED, error code [ UNAUTHORIZED ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+    put:
+      tags: [ Traveler ]
+      summary: Обновить информацию о путешественнике
+      description: Обновляет персональные данные путешественника.
+      parameters:
+        - name: uid
+          in: path
+          description: Уникальный идентификатор путешественника
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "48abf1fd-6073-4450-bb7b-4e2754db4fc9"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TravelerUpdate'
+      responses:
+        '200':
+          description: Успешное обновление
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Traveler'
+        '400':
+          description: BAD_REQUEST, error code [ VALIDATION_ERROR ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '401':
+          description: UNAUTHORIZED, error code [ UNAUTHORIZED ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+    delete:
+      tags: [ Traveler ]
+      summary: Удалить путешественника
+      description: Удаляет карточку путешественника.
+      parameters:
+        - name: uid
+          in: path
+          description: Уникальный идентификатор путешественника
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "48abf1fd-6073-4450-bb7b-4e2754db4fc9"
+      responses:
+        '204':
+          description: Успешное удаление
+        '401':
+          description: UNAUTHORIZED, error code [ UNAUTHORIZED ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+  /travelers/{uid}/documents:
+    post:
+      tags: [ Traveler ]
+      summary: Создать документ для путешественника
+      description: Создает новый документ для указанного путешественника.
+      parameters:
+        - name: uid
+          in: path
+          description: Уникальный идентификатор путешественника
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "48abf1fd-6073-4450-bb7b-4e2754db4fc9"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentCreate'
+      responses:
+        '201':
+          description: Документ успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '400':
+          description: BAD_REQUEST, error code [ VALIDATION_ERROR ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '401':
+          description: UNAUTHORIZED, error code [ UNAUTHORIZED ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '409':
+          description: CONFLICT, error code [ RUSSIAN_PASSPORT_ALREADY_EXISTS ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+  /documents/{uid}:
+    get:
+      tags: [ Document ]
+      summary: Получить информацию о документе
+      description: Возвращает детальную информацию о документе путешественника.
+      parameters:
+        - name: uid
+          in: path
+          description: Уникальный идентификатор документа
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "00ded6f5-5d00-47ed-bf45-6db8102d028c"
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '401':
+          description: UNAUTHORIZED, error code [ UNAUTHORIZED ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+    put:
+      tags: [ Document ]
+      summary: Обновить информацию о документе
+      description: Обновляет данные документа путешественника.
+      parameters:
+        - name: uid
+          in: path
+          description: Уникальный идентификатор документа
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "00ded6f5-5d00-47ed-bf45-6db8102d028c"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentUpdate'
+      responses:
+        '200':
+          description: Успешное обновление
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '400':
+          description: BAD_REQUEST, error code [ VALIDATION_ERROR ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '401':
+          description: UNAUTHORIZED, error code [ UNAUTHORIZED ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+    delete:
+      tags: [ Document ]
+      summary: Удалить документ
+      description: Удаляет документ у путешественника.
+      parameters:
+        - name: uid
+          in: path
+          description: Уникальный идентификатор документа
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "00ded6f5-5d00-47ed-bf45-6db8102d028c"
+      responses:
+        '204':
+          description: Успешное удаление
+        '401':
+          description: UNAUTHORIZED, error code [ UNAUTHORIZED ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+  /travelers/{uid}/bonusCards:
+    post:
+      tags: [ Traveler ]
+      summary: Создать бонусную карту для путешественника
+      description: Создает новую бонусную карту для указанного путешественника.
+      parameters:
+        - name: uid
+          in: path
+          description: Уникальный идентификатор путешественника
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "48abf1fd-6073-4450-bb7b-4e2754db4fc9"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BonusCardCreate'
+      responses:
+        '201':
+          description: Бонусная карта успешно создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BonusCard'
+        '400':
+          description: BAD_REQUEST, error code [ VALIDATION_ERROR ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '401':
+          description: UNAUTHORIZED, error code [ UNAUTHORIZED ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+  /bonusCards/{uid}:
+    get:
+      tags: [ BonusCard ]
+      summary: Получить информацию о бонусной карте
+      description: Возвращает детальную информацию о бонусной карте путешественника.
+      parameters:
+        - name: uid
+          in: path
+          description: Уникальный идентификатор бонусной карты
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "e12c32ab-0263-4289-9dfe-be951b0b7d78"
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BonusCard'
+        '401':
+          description: UNAUTHORIZED, error code [ UNAUTHORIZED ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+    put:
+      tags: [ BonusCard ]
+      summary: Обновить информацию о бонусной карте
+      description: Обновляет данные бонусной карты путешественника.
+      parameters:
+        - name: uid
+          in: path
+          description: Уникальный идентификатор бонусной карты
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "e12c32ab-0263-4289-9dfe-be951b0b7d78"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BonusCardUpdate'
+      responses:
+        '200':
+          description: Успешное обновление
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BonusCard'
+        '400':
+          description: BAD_REQUEST, error code [ VALIDATION_ERROR ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '401':
+          description: UNAUTHORIZED, error code [ UNAUTHORIZED ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+    delete:
+      tags: [ BonusCard ]
+      summary: Удалить бонусную карту
+      description: Удаляет бонусную карту у путешественника.
+      parameters:
+        - name: uid
+          in: path
+          description: Уникальный идентификатор бонусной карты
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "e12c32ab-0263-4289-9dfe-be951b0b7d78"
+      responses:
+        '204':
+          description: Успешное удаление
+        '401':
+          description: UNAUTHORIZED, error code [ UNAUTHORIZED ]
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+  /utils/transliterate:
+    post:
+      tags: [ Utils ]
+      summary: Транслитерировать текст
+      description: Транслитерирует текст кириллицы на латиницу.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                  description: Текст на кириллице
+                  example: "Привет"
+      responses:
+        '200':
+          description: Успешная транслитерация
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "PRIVET"
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+  /geo/autocompleteAirlines:
+    get:
+      tags: [ Geo ]
+      summary: Автозаполнение авиакомпаний
+      description: Предоставляет список авиакомпаний по части названия.
+      parameters:
+        - name: name
+          in: query
+          description: Подстрока названия авиакомпании
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Количество записей в ответе
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Airline'
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
+components:
+  schemas:
+    AuthRequest:
+      type: object
+      required:
+        - login
+        - password
+      properties:
+        login:
+          type: string
+          description: Логин (Адрес электронной почты или номер телефона)
+          example: user@example.com
+        password:
+          type: string
+          description: Пароль
+          example: my_1secret1_password
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT token
+          example: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTYyMjUwNj...
+
+    PreRegistrationRequest:
+      type: object
+      required:
+        - email
+      properties:
+        nickname:
+          type: string
+          description: Имя
+          example: Иван Петров
+        email:
+          type: string
+          description: Адрес электронной почты
+          example: user@example.comъ
+
+    RegisteResponse:
+      type: object
+      properties:
+        nextRequestAfter:
+          type: string
+          description: Время, когда можно сделать следующий запрос ISO 8601
+          example: 2000-01-01T12:00:00.0999307+03:00
+
+    SetPasswordRequest:
+      type: object
+      required:
+        - token
+        - password
+      properties:
+        token:
+          type: string
+          description: Активационный токен
+        password:
+          type: string
+          description: Пароль
+
+    ForgotPasswordRequest:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          description: Адрес электронной почты
+          example: user@example.com
+
+    ForgotPasswordResponse:
+      type: object
+      properties:
+        nextRequestAfter:
+          type: string
+          description: TВремя, когда можно сделать следующий запрос ISO 8601
+          example: 2000-01-01T12:00:00.0999307+03:00
+
+    UpdatePasswordAndLoginRequest:
+      type: object
+      required:
+        - token
+        - password
+      properties:
+        token:
+          type: string
+          description: Токен сброса пароля
+        password:
+          type: string
+          description: Новый пароль
+
+    UpdatePasswordRequest:
+      type: object
+      required:
+        - oldPassword
+        - newPassword
+      properties:
+        oldPassword:
+          type: string
+          description: Текущий пароль
+        newPassword:
+          type: string
+          description: Новый пароль
+
+    UpdateUserRequest:
+      type: object
+      required:
+        - nickname
+        - email
+      properties:
+        nickname:
+          type: string
+          description: Имя
+        email:
+          type: string
+          description: Адрес электронной почты
+          format: email
+        phone:
+          type: string
+          description: Номер телефона
+
+    UserResponse:
+      type: object
+      properties:
+        uid:
+          type: string
+          format: uuid
+          description: Идентификатор пользователя
+        nickname:
+          type: string
+          description: Имя
+        email:
+          type: string
+          description: Адрес электронной почты
+        phone:
+          type: string
+          description: Номер телефона
+
+    UserInfoResponse:
+      type: object
+      properties:
+        uid:
+          type: string
+          format: uuid
+          description: Идентификатор пользователя
+        role:
+          $ref: '#/components/schemas/UserRoleRDto'
+        nickname:
+          type: string
+          description: Имя
+
+    UserRoleRDto:
+      type: string
+      description: Роль
+      enum:
+        - USER
+        - ADMIN
+
+    DeleteUserRequest:
+      type: object
+      required:
+        - password
+      properties:
+        password:
+          type: string
+          description: Пароль пользователя для подтверждения
+
+    ValidateActivateLinkRequest:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+          description: Активационный токен
+          example: EwJGdlanZRblNqMS9
+
+    ValidateForgotPasswordRequest:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+          description: Токен сброса пароля
+          example: EwJGdlanZRblNqMS9
+
+    Traveler:
+      type: object
+      description: Путешественник
+      required:
+        - uid
+        - firstName
+        - firstNameLatin
+        - birthday
+        - gender
+      properties:
+        uid:
+          type: string
+          format: uuid
+          description: Уникальный идентификатор
+          example: "48abf1fd-6073-4450-bb7b-4e2754db4fc9"
+        lastName:
+          type: string
+          description: Фамилия
+          example: "Петров"
+        lastNameLatin:
+          type: string
+          description: Фамилия на латинице
+          example: "PETROV"
+        firstName:
+          type: string
+          description: Имя
+          example: "Петр"
+        firstNameLatin:
+          type: string
+          description: Имя на латинице
+          example: "PETR"
+        middleName:
+          type: string
+          description: Отчество
+          example: "Петрович"
+        middleNameLatin:
+          type: string
+          description: Отчество на латинице
+          example: "PETROVICH"
+        birthday:
+          type: string
+          description: Дата рождения
+          format: date
+          example: "2000-06-22"
+        gender:
+          $ref: "#/components/schemas/Gender"
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/Document'
+        bonusCards:
+          type: array
+          items:
+            $ref: '#/components/schemas/BonusCard'
+
+    TravelerCreate:
+      type: object
+      description: Путешественник
+      required:
+        - firstName
+        - firstNameLatin
+        - birthday
+        - gender
+        - personHasNoMiddleName
+      properties:
+        lastName:
+          type: string
+          description: Фамилия
+          example: "Петров"
+        lastNameLatin:
+          type: string
+          description: Фамилия на латинице
+          example: "PETROV"
+        firstName:
+          type: string
+          description: Имя
+          example: "Петр"
+        firstNameLatin:
+          type: string
+          description: Имя на латинице
+          example: "PETR"
+        middleName:
+          type: string
+          description: Отчество
+          example: "Петрович"
+        middleNameLatin:
+          type: string
+          description: Отчество на латинице
+          example: "PETROVICH"
+        personHasNoMiddleName:
+          type: boolean
+          description: Отсутствие отчества
+          example: false
+        birthday:
+          type: string
+          description: Дата рождения
+          format: date
+          example: "2000-06-22"
+        gender:
+          $ref: "#/components/schemas/Gender"
+
+    TravelerUpdate:
+      type: object
+      description: Путешественник
+      required:
+        - uid
+        - firstName
+        - firstNameLatin
+        - birthday
+        - gender
+        - personHasNoMiddleName
+      properties:
+        uid:
+          type: string
+          format: uuid
+          description: Уникальный идентификатор
+          example: "48abf1fd-6073-4450-bb7b-4e2754db4fc9"
+        lastName:
+          type: string
+          description: Фамилия
+          example: "Петров"
+        lastNameLatin:
+          type: string
+          description: Фамилия на латинице
+          example: "PETROV"
+        firstName:
+          type: string
+          description: Имя
+          example: "Петр"
+        firstNameLatin:
+          type: string
+          description: Имя на латинице
+          example: "PETR"
+        middleName:
+          type: string
+          description: Отчество
+          example: "Петрович"
+        middleNameLatin:
+          type: string
+          description: Отчество на латинице
+          example: "PETROVICH"
+        personHasNoMiddleName:
+          type: boolean
+          description: Отсутствие отчества
+          example: false
+        birthday:
+          type: string
+          description: Дата рождения
+          format: date
+          example: "2000-06-22"
+        gender:
+          $ref: "#/components/schemas/Gender"
+
+    Gender:
+      type: string
+      description: Пол
+      enum: [ MALE, FEMALE ]
+      example: "MALE"
+
+    DocumentType:
+      type: string
+      description: Тип документа
+      enum: [ RUSSIAN_PASSPORT, RUSSIAN_FOREIGN_PASSPORT ]
+      example: "RUSSIAN_PASSPORT"
+
+    Document:
+      type: object
+      description: Документ путешественника
+      properties:
+        uid:
+          type: string
+          format: uuid
+          description: Уникальный идентификатор документа
+          example: "cbb805ea-618e-4ead-b8ce-c4e11d99094e"
+        type:
+          $ref: "#/components/schemas/DocumentType"
+        number:
+          type: string
+          description: Номер документа
+          example: "3667 584841"
+        lastName:
+          type: string
+          description: Фамилия
+          example: "Петров"
+        firstName:
+          type: string
+          description: Имя
+          example: "Петр"
+        middleName:
+          type: string
+          description: Отчество
+          example: "Петрович"
+        issueDate:
+          type: string
+          description: Дата выдачи документа
+          format: date
+          example: "2025-06-20"
+        expirationDate:
+          type: string
+          description: Дата окончания действия документа
+          format: date
+          example: "2030-06-22"
+        citizenship:
+          $ref: '#/components/schemas/Citizenship'
+
+    DocumentCreate:
+      type: object
+      description: Документ путешественника
+      required:
+        - type
+        - number
+      properties:
+        type:
+          $ref: "#/components/schemas/DocumentType"
+        number:
+          type: string
+          description: Номер документа
+          example: "47 6374843"
+        lastName:
+          type: string
+          description: Фамилия
+          example: "PETROV"
+        firstName:
+          type: string
+          description: Имя
+          example: "PETR"
+        middleName:
+          type: string
+          description: Отчество
+          example: "PETROVICH"
+        issueDate:
+          type: string
+          description: Дата выдачи документа
+          format: date
+          example: "2025-06-20"
+        expirationDate:
+          type: string
+          description: Дата окончания действия документа
+          format: date
+          example: "2030-06-22"
+        citizenship:
+          $ref: '#/components/schemas/Citizenship'
+
+    DocumentUpdate:
+      type: object
+      description: Документ путешественника
+      required:
+        - uid
+        - type
+        - number
+      properties:
+        uid:
+          type: string
+          format: uuid
+          description: Уникальный идентификатор документа
+          example: "cbb805ea-618e-4ead-b8ce-c4e11d99094e"
+        type:
+          $ref: "#/components/schemas/DocumentType"
+        number:
+          type: string
+          description: Номер документа
+          example: "47 6374843"
+        lastName:
+          type: string
+          description: Фамилия
+          example: "PETROV"
+        firstName:
+          type: string
+          description: Имя
+          example: "PETR"
+        middleName:
+          type: string
+          description: Отчество
+          example: "PETROVICH"
+        issueDate:
+          type: string
+          description: Дата выдачи документа
+          format: date
+          example: "2025-06-20"
+        expirationDate:
+          type: string
+          description: Дата окончания действия документа
+          format: date
+          example: "2030-06-22"
+        citizenship:
+          $ref: '#/components/schemas/Citizenship'
+
+    BonusCardType:
+      type: string
+      description: Тип бонусной карты
+      enum: [ AVIA_BONUS ]
+      example: "AVIA_BONUS"
+
+    BonusCard:
+      type: object
+      description: Бонусная карта путешественника
+      properties:
+        uid:
+          type: string
+          format: uuid
+          description: Уникальный идентификатор бонусной карты
+          example: "e12c32ab-0263-4289-9dfe-be951b0b7d78"
+        type:
+          $ref: "#/components/schemas/BonusCardType"
+        number:
+          type: string
+          description: Номер карты
+          example: "9998887776"
+        country:
+          type: string
+          description: Страна авиакомпании
+          example: "Russia"
+        airlineName:
+          type: string
+          description: Название авиакомпании на латинице
+          example: "Aeroflot"
+        airlineNameRu:
+          type: string
+          description: Название авиакомпании на русском
+          example: "Аэрофлот"
+        iataCode:
+          type: string
+          description: IATA код
+          example: "SU"
+        airlineUid:
+          type: string
+          format: uuid
+          description: Идентификатор авиакомпании
+          example: "36de39c9-fc2f-4c02-864b-56ee21b91a4c"
+
+    BonusCardCreate:
+      type: object
+      description: Бонусная карта путешественника
+      required:
+        - type
+        - number
+      properties:
+        type:
+          $ref: "#/components/schemas/BonusCardType"
+        number:
+          type: string
+          description: Номер карты
+          example: "9998887776"
+        country:
+          type: string
+          description: Страна авиакомпании
+          example: "Russia"
+        airlineName:
+          type: string
+          description: Название авиакомпании на латинице
+          example: "Aeroflot"
+        airlineNameRu:
+          type: string
+          description: Название авиакомпании на русском
+          example: "Аэрофлот"
+        iataCode:
+          type: string
+          description: IATA код
+          example: "SU"
+        airlineUid:
+          type: string
+          format: uuid
+          description: Идентификатор авиакомпании
+          example: "36de39c9-fc2f-4c02-864b-56ee21b91a4c"
+
+    BonusCardUpdate:
+      type: object
+      description: Бонусная карта путешественника
+      required:
+        - uid
+        - type
+      properties:
+        uid:
+          type: string
+          format: uuid
+          description: Уникальный идентификатор бонусной карты
+          example: "e12c32ab-0263-4289-9dfe-be951b0b7d78"
+        type:
+          $ref: "#/components/schemas/BonusCardType"
+        number:
+          type: string
+          description: Номер карты
+          example: "9998887776"
+        country:
+          type: string
+          description: Страна авиакомпании
+          example: "Russia"
+        airlineName:
+          type: string
+          description: Название авиакомпании на латинице
+          example: "Aeroflot"
+        airlineNameRu:
+          type: string
+          description: Название авиакомпании на русском
+          example: "Аэрофлот"
+        iataCode:
+          type: string
+          description: IATA код
+          example: "SU"
+        airlineUid:
+          type: string
+          format: uuid
+          description: Идентификатор авиакомпании
+          example: "36de39c9-fc2f-4c02-864b-56ee21b91a4c"
+
+    Citizenship:
+      type: object
+      description: Гражданство
+      required:
+        - uid
+      properties:
+        uid:
+          type: string
+          format: uuid
+          description: Идентификатор страны гражданства
+          example: "555b794c-06f8-49ef-a6bd-0c457c17b0b7"
+        name:
+          type: string
+          description: Название страны
+          example: "РОССИЯ"
+
+    Airline:
+      type: object
+      properties:
+        country:
+          type: string
+          example: "Russia"
+        iataCode:
+          type: string
+          example: "SU"
+        airlineName:
+          type: string
+          example: "Aeroflot"
+        airlineNameRu:
+          type: string
+          example: "Аэрофлот"
+        airlineUid:
+          type: string
+          format: uuid
+          description: Идентификатор авиакомпании
+          example: "36de39c9-fc2f-4c02-864b-56ee21b91a4c"
+
+    ValidationError:
+      type: object
+      properties:
+        uid:
+          type: string
+          format: uuid
+          description: "Uid ошибки"
+          example: "620e9d9c-2043-436d-9ddb-84b555c1638e"
+        requestUid:
+          type: string
+          format: uuid
+          description: "Uid запроса"
+          example: "620e9d9c-2043-436d-9ddb-84b555c1638e"
+        code:
+          type: string
+          example: "VALIDATION_ERROR"
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              fieldName:
+                type: array
+                items:
+                  type: string
+              message:
+                type: string
+        timestamp:
+          type: string
+          format: date-time
+          description: "Дата и время ошибки в формате ISO 8601"
+          example: "2000-01-01T00:00:00.0000001"
+
+    ServerErrorResponse:
+      type: object
+      description: Ошибка
+      properties:
+        uid:
+          type: string
+          format: uuid
+          description: "Uid ошибки"
+          example: "620e9d9c-2043-436d-9ddb-84b555c1638e"
+        requestUid:
+          type: string
+          description: "Uid запроса"
+          example: "620e9d9c-2043-436d-9ddb-84b555c1638e"
+        code:
+          type: string
+          example: "INTERNAL_SERVER_ERROR"
+        message:
+          type: string
+          example: "Что-то пошло не так. Пожалуйста, попробуйте позже"
+        timestamp:
+          type: string
+          format: date-time
+          description: "Дата и время ошибки в формате ISO 8601"
+          example: "2000-01-01T00:00:00.0000001"

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" name="VkHrTekApp">
+    <Properties>
+        <Property name="LOG_EXCEPTION_CONVERSION_WORD">%xwEx</Property>
+        <Property name="LOG_LEVEL_PATTERN">%5p</Property>
+        <Property name="LOG_DATEFORMAT_PATTERN">yyyy-MM-dd'T'HH:mm:ss.SSSXXX</Property>
+        <Property name="CONSOLE_LOG_PATTERN">%clr{%d{${sys:LOG_DATEFORMAT_PATTERN}}}{faint} %clr{${sys:LOG_LEVEL_PATTERN}} %clr{%pid}{magenta} %clr{--- %esb{${sys:APPLICATION_NAME:-}}%esb{${sys:APPLICATION_GROUP:-}}[%15.15t] ${sys:LOG_CORRELATION_PATTERN:-}}{faint}%clr{%-40.40c{1.}}{cyan} ${sys:LOG_CORRELATION_PATTERN:-} %clr{:}{faint} %m%n${sys:LOG_EXCEPTION_CONVERSION_WORD}</Property>
+        <Property name="APP_CONSOLE_LOG_PATTERN">%clr{%d{${sys:LOG_DATEFORMAT_PATTERN}}}{faint} %clr{${sys:LOG_LEVEL_PATTERN}} %clr{%pid}{magenta} %clr{--- %esb{${sys:APPLICATION_NAME:-}}%esb{${sys:APPLICATION_GROUP:-}}[%15.15t] ${sys:LOG_CORRELATION_PATTERN:-}}{faint}%clr{%-40.40c{1.}}{cyan} ${sys:LOG_CORRELATION_PATTERN:-} %notEmpty{[%clr{REQ_ID=}{faint}%clr{%X{REQUEST_ID}}{magenta}]} %clr{:}{faint} %m%n${sys:LOG_EXCEPTION_CONVERSION_WORD}</Property>
+        <Property name="FILE_LOG_PATTERN">%d{${sys:LOG_DATEFORMAT_PATTERN}} ${sys:LOG_LEVEL_PATTERN} %pid --- %esb{${sys:APPLICATION_NAME:-}}%esb{${sys:APPLICATION_GROUP:-}}[%t] ${sys:LOG_CORRELATION_PATTERN:-}%-40.40c{1.} : %m%n${sys:LOG_EXCEPTION_CONVERSION_WORD}</Property>
+    </Properties>
+    <Appenders>
+        <Console name="CONSOLE_DEFAULT" target="SYSTEM_OUT">
+            <Select>
+                <SystemPropertyArbiter propertyName="CONSOLE_LOG_STRUCTURED_FORMAT">
+                    <StructuredLogLayout format="${sys:CONSOLE_LOG_STRUCTURED_FORMAT}" charset="${sys:CONSOLE_LOG_CHARSET}"/>
+                </SystemPropertyArbiter>
+                <DefaultArbiter>
+                    <PatternLayout pattern="${sys:CONSOLE_LOG_PATTERN}" charset="${sys:CONSOLE_LOG_CHARSET}"/>
+                </DefaultArbiter>
+            </Select>
+            <Filters>
+                <ThresholdFilter level="${sys:CONSOLE_LOG_THRESHOLD:-TRACE}"/>
+            </Filters>
+        </Console>
+        <Console name="CONSOLE_APP" target="SYSTEM_OUT">
+            <Select>
+                <DefaultArbiter>
+                    <PatternLayout pattern="${sys:APP_CONSOLE_LOG_PATTERN}" charset="${sys:CONSOLE_LOG_CHARSET}"/>
+                </DefaultArbiter>
+            </Select>
+            <Filters>
+                <ThresholdFilter level="${sys:CONSOLE_LOG_THRESHOLD:-TRACE}"/>
+            </Filters>
+        </Console>
+    </Appenders>
+
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="CONSOLE_DEFAULT"/>
+        </Root>
+        <Logger name="com.du" level="debug" additivity="false">
+            <AppenderRef ref="CONSOLE_APP"/>
+        </Logger>
+    </Loggers>
+
+</Configuration>

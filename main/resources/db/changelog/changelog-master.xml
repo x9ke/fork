@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd">
+
+    <include file="2025/07/init-schedlock.xml" relativeToChangelogFile="true"/>
+    <include file="2025/07/28-create-enum-types.xml" relativeToChangelogFile="true"/>
+    <include file="2025/07/28-create-orders-table.xml" relativeToChangelogFile="true"/>
+    <include file="2025/07/28-create-product-table.xml" relativeToChangelogFile="true"/>
+    <include file="2025/07/28-create-flight-table.xml" relativeToChangelogFile="true"/>
+    <include file="2025/07/28-create-flight-leg-table.xml" relativeToChangelogFile="true"/>
+    <include file="2025/07/28-create-flight-segment-table.xml" relativeToChangelogFile="true"/>
+    <include file="2025/07/28-create-avia-ticket-table.xml" relativeToChangelogFile="true"/>
+    <include file="2025/07/28-create-avia-passenger-table.xml" relativeToChangelogFile="true"/>
+    <include file="2025/07/28-create-leg-ticket-table.xml" relativeToChangelogFile="true"/>
+    <include file="2025/07/28-create-avia-product-table.xml" relativeToChangelogFile="true"/>
+
+</databaseChangeLog>

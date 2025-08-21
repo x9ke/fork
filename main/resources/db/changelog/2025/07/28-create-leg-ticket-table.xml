@@ -1,0 +1,33 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd">
+
+    <changeSet id="create_leg_ticket_table" author="vstkachenko">
+        <createTable tableName="leg_ticket">
+            <column name="leg_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ticket_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Foreign key to flight_leg -->
+        <addForeignKeyConstraint
+                constraintName="fk_leg_ticket_leg_id__flight_leg"
+                baseTableName="leg_ticket"
+                baseColumnNames="leg_id"
+                referencedTableName="flight_leg"
+                referencedColumnNames="id"/>
+
+        <!-- Foreign key to avia_ticket -->
+        <addForeignKeyConstraint
+                constraintName="fk_leg_ticket_ticket_id__avia_ticket"
+                baseTableName="leg_ticket"
+                baseColumnNames="ticket_id"
+                referencedTableName="avia_ticket"
+                referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

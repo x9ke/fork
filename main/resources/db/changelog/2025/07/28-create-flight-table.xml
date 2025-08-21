@@ -1,0 +1,49 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd">
+
+    <changeSet id="create_flight_table" author="vstkachenko">
+        <createTable tableName="flight">
+            <column name="additional_fares_available" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="baggage_available" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="duration_minutes" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="exchange_available" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="refund_available" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="fare_family_marketing_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fare_family_type" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tariff" type="flight_tariff">
+                <constraints nullable="false"/>
+            </column>
+            <column name="baggage_info" type="JSONB"/>
+            <column name="cabin_baggage_info" type="JSONB"/>
+            <column name="validating_carrier_id" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="validating_carrier_name" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

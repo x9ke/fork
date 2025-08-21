@@ -1,0 +1,37 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd">
+
+    <changeSet id="create_avia_passenger_table" author="vstkachenko">
+        <createTable tableName="avia_passenger">
+            <column name="created_by" type="TEXT"/>
+            <column name="modified_by" type="TEXT"/>
+            <column name="created_at" type="TIMESTAMP(6) WITH TIME ZONE"/>
+            <column name="modified_at" type="TIMESTAMP(6) WITH TIME ZONE"/>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="document_id" type="UUID"/>
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="ticket_id" type="UUID"/>
+            <column name="traveler_id" type="UUID"/>
+            <column name="external_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ticket_number" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+                constraintName="fk_avia_passenger_ticket_id__avia_ticket"
+                baseTableName="avia_passenger"
+                baseColumnNames="ticket_id"
+                referencedTableName="avia_ticket"
+                referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

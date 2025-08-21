@@ -1,0 +1,61 @@
+server:
+  port: 8075
+  servlet:
+    context-path: /api/v1
+spring:
+  application:
+    name: ${APP_NAME:orders-b2c}
+  datasource:
+    url: jdbc:postgresql://localhost:2001/orders
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/changelog-master.xml
+springdoc:
+  swagger-ui:
+    enabled: true
+
+app:
+  app-token: "82cfae3e-3aee-4788-97a8-d72c29365bc6"
+  disable-auth: true
+  client:
+    clients:
+      avia:
+        url: "http://localhost:8086/api/v1/avia"
+        api-token: "82cfae3e-3aee-4788-97a8-d72c29365bc6"
+        logger-level: full
+      acquiring:
+        url: "http://localhost:8087/api/v1/acquiring"
+        api-token: "82cfae3e-3aee-4788-97a8-d72c29365bc6"
+        logger-level: full
+      users:
+        url: "http://localhost:8088/api/v1/users"
+        api-token: "82cfae3e-3aee-4788-97a8-d72c29365bc6"
+        logger-level: full
+      email:
+        url: "http://localhost:8088/api/v1/notificationEmail"
+        api-token: "82cfae3e-3aee-4788-97a8-d72c29365bc6"
+        logger-level: full
+
+logging:
+  config: classpath:log4j2-develop.xml
+  level:
+    org.springframework.cache: TRACE
+    org.springframework:
+        jdbc:
+          datasource:
+            init: DEBUG
+        boot:
+          autoconfigure: DEBUG
+    liquibase: TRACE
+

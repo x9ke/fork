@@ -1,0 +1,45 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ${APP_NAME}
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      naming:
+        implicit-strategy: com.du.besttrip.ordersb2c.config.BesttripNamingStrategyComponentPathImpl
+      ddl-auto: validate
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/changelog-master.xml
+
+app:
+  appToken: "9de058b4-931c-4af3-864c-09a50c03314a"
+
+logging:
+  config: classpath:log4j2-main.xml
+
+springdoc:
+  swagger-ui:
+    enabled: false
+
+management:
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+      access: read_only
+    prometheus:
+      access: read_only
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  prometheus:
+    metrics:
+      export:
+        enabled: true

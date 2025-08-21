@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" name="FileStorage">
+    <Appenders>
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <JsonTemplateLayout eventTemplateUri="classpath:EcsLayout.json"/>
+        </Console>
+
+        <Kafka name="KAFKA" topic="${env:APP_NAME}-ms-logs-${env:ENVIRONMENT}" ignoreExceptions="false" retryCount="3">
+            <JsonTemplateLayout
+                    eventTemplateUri="classpath:EcsLayout.json"
+                    maxStringLength="5242880" /><!-- 10 MB in chars -->
+            <Property name="bootstrap.servers">${env:KAFKA_LOG_ADDRESS}</Property>
+            <Property name="sasl.mechanism">SCRAM-SHA-512</Property>
+            <Property name="security.protocol">SASL_PLAINTEXT</Property>
+            <Property name="sasl.jaas.config">org.apache.kafka.common.security.scram.ScramLoginModule required username="${env:KAFKA_LOG_USERNAME}" password="${env:KAFKA_LOG_PASSWORD}";</Property>
+            <Property name="compression.type">gzip</Property>
+            <Property name="max.request.size">10485760</Property><!-- 10 MB -->
+            <Property name="max.partition.fetch.bytes">10485760</Property><!-- 10 MB -->
+            <Property name="request.timeout.ms">15000</Property>
+        </Kafka>
+        <Kafka name="KAFKA_FAILOVER" topic="${env:APP_NAME}-ms-logs-failover-${env:ENVIRONMENT}" ignoreExceptions="false">
+            <JsonTemplateLayout
+                    eventTemplateUri="classpath:EcsLayout.json"
+                    maxStringLength="5242880" /><!-- 10 MB in chars -->
+            <Property name="bootstrap.servers">${env:KAFKA_LOG_ADDRESS}</Property>
+            <Property name="sasl.mechanism">SCRAM-SHA-512</Property>
+            <Property name="security.protocol">SASL_PLAINTEXT</Property>
+            <Property name="sasl.jaas.config">org.apache.kafka.common.security.scram.ScramLoginModule required username="${env:KAFKA_LOG_USERNAME}" password="${env:KAFKA_LOG_PASSWORD}";</Property>
+            <Property name="compression.type">gzip</Property>
+            <Property name="max.request.size">10485760</Property><!-- 10 MB -->
+            <Property name="max.partition.fetch.bytes">10485760</Property><!-- 10 MB -->
+            <Property name="request.timeout.ms">15000</Property>
+        </Kafka>
+        <RollingFile name="KAFKA_FAILOVER_FILE" fileName="logs/kafka-failover.log"
+                     filePattern="logs/kafka-failover-%d{MM-dd-yyyy}.log.gz">
+            <JsonTemplateLayout eventTemplateUri="classpath:EcsLayout.json"/>
+            <TimeBasedTriggeringPolicy/>
+        </RollingFile>
+
+        <!-- https://logging.apache.org/log4j/2.x/manual/appenders.html#failoverappender -->
+        <Failover name="KAFKA_FAILOVER_WRAPPER" primary="KAFKA">
+            <Failovers>
+                <AppenderRef ref="KAFKA_FAILOVER"/>
+                <AppenderRef ref="KAFKA_FAILOVER_FILE"/>
+            </Failovers>
+        </Failover>
+    </Appenders>
+
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="KAFKA_FAILOVER_WRAPPER"/>
+        </Root>
+        <Logger name="com.du" level="debug" additivity="false">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="KAFKA_FAILOVER_WRAPPER"/>
+        </Logger>
+    </Loggers>
+
+</Configuration>

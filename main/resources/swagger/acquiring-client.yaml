@@ -1,0 +1,112 @@
+openapi: 3.1.0
+info:
+  title: Acquiring API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8076/api/v1/payment
+    description: Local server
+security:
+  - bearerAuth: []
+
+paths:
+  /orders/start:
+    post:
+      summary: Старт платежа по заказу
+      operationId: startFromOrders
+      tags: [Acquiring]
+      parameters:
+        - in: header
+          name: X-Bank
+          required: true
+          description: Банк/провайдер эквайринга
+          schema:
+            $ref: '#/components/schemas/BankType'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartFromOrdersRequest'
+      responses:
+        '200':
+          description: Успешный старт платежа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Options'
+        '400':
+          description: Ошибка валидации входных данных
+        '401':
+          description: Неавторизовано (Bearer или X-Api-Key)
+        '500':
+          description: Внутренняя ошибка сервера
+
+components:
+  schemas:
+    BankType:
+      type: string
+      description: Тип банка/провайдера эквайринга
+      enum: [GAZPROMBANK, SBERBANK, TINKOFF, ALFABANK, SBP]
+      example: GAZPROMBANK
+
+    StartFromOrdersRequest:
+      type: object
+      required: [orderId, amount, currency]
+      properties:
+        productId:
+          type: string
+          format: uuid
+          description: Идентификатор заказа
+        amount:
+          type: number
+          description: Сумма платежа (в минимальных единицах или денежный формат — по вашей договорённости)
+          example: 100500
+        currency:
+          type: string
+          description: Валюта (ISO 4217)
+          example: RUB
+        description:
+          type: string
+          description: Описание платежа
+          example: "Оплата заказа №12345"
+
+    # === shared ===
+    Options:
+      type: object
+      description: Дополнительные опции платёжных сценариев
+      properties:
+        mirPayMerchantToken:
+          type: string
+          nullable: true
+        mirPayPaymentToken:
+          type: string
+          nullable: true
+        expiredCardsAllowed:
+          type: boolean
+          nullable: true
+        sbpEnabled:
+          type: boolean
+          nullable: true
+        sberPayEnabled:
+          type: boolean
+          nullable: true
+        gazpromPayEnabled:
+          type: boolean
+          nullable: true
+        offerTimeout:
+          type: boolean
+          nullable: true
+          description: Флаг таймаута оферты
+        offerStartedAt:
+          type: boolean
+          nullable: true
+          description: Флаг старта оферты
+        paymentPageUrl:
+          type: string
+          format: uri
+          nullable: true
+        lang:
+          type: string
+          nullable: true
+      required:
+        - paymentPageUrl
