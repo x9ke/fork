@@ -14,6 +14,12 @@
             </column>
         </createTable>
 
+        <!-- Composite primary key -->
+        <addPrimaryKey
+                tableName="leg_ticket"
+                columnNames="leg_id, ticket_id"
+                constraintName="pk_leg_ticket_leg_id_ticket_id"/>
+
         <!-- Foreign key to flight_leg -->
         <addForeignKeyConstraint
                 constraintName="fk_leg_ticket_leg_id__flight_leg"

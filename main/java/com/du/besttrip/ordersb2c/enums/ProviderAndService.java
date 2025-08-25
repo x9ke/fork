@@ -7,5 +7,6 @@ public enum ProviderAndService {
     OSTROVOK_HOTEL,
     IM_RZD,
     VIPSERVICE_AVIA,
-    IWAY_TRANSFER
+    IWAY_TRANSFER,
+    UNKNOWN
 }

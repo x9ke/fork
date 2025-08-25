@@ -39,7 +39,7 @@ app:
         api-token: "82cfae3e-3aee-4788-97a8-d72c29365bc6"
         logger-level: full
       users:
-        url: "http://localhost:8088/api/v1/users"
+        url: "http://localhost:8077/api/v1"
         api-token: "82cfae3e-3aee-4788-97a8-d72c29365bc6"
         logger-level: full
       email:

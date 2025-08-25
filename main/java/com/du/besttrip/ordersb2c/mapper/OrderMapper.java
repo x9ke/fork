@@ -1,7 +1,6 @@
 package com.du.besttrip.ordersb2c.mapper;
 
 import com.du.besttrip.ordersb2c.avia.model.CreateBookingResponseDto;
-import com.du.besttrip.ordersb2c.enums.OrderStatus;
 import com.du.besttrip.ordersb2c.model.OrderEntity;
 import com.du.besttrip.ordersb2c.model.ProductEntity;
 import org.mapstruct.*;
@@ -21,17 +20,18 @@ import java.util.UUID;
                 ReferenceMapper.class
         }
 )
-public abstract class BookingMapper {
+public abstract class OrderMapper {
 
     @Autowired
     protected AviaProductMapper aviaProductMapper;
 
-    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "id", source = "orderUid")
     @Mapping(target = "products", source = "aviaProduct", qualifiedByName = "mapAviaProductToList")
+    //TODO где взять статус
     @Mapping(target = "status", expression = "java(com.du.besttrip.ordersb2c.enums.OrderStatus.IN_PROGRESS)")
     @Mapping(target = "files", expression = "java(new java.util.HashSet<>())")
     @Mapping(target = "personUid", ignore = true)
-    @Mapping(target = "travelerUids", expression = "java(new java.util.HashSet<>())")
+    @Mapping(target = "passengerUids", expression = "java(new java.util.HashSet<>())")
     @Mapping(target = "version", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
@@ -41,10 +41,9 @@ public abstract class BookingMapper {
 
     @AfterMapping
     protected void afterMapping(@MappingTarget OrderEntity order, CreateBookingResponseDto dto) {
-        if (order.getProducts() != null) {
-            order.getProducts().forEach(product -> product.setOrder(order));
-        }
+        order.getProducts().forEach(product -> product.setOrder(order));
 
+        //TODO тут какой то нужен uid
         if (dto.getAviaProduct() != null && dto.getAviaProduct().getPersonUids() != null
                 && !dto.getAviaProduct().getPersonUids().isEmpty()) {
             String firstPersonUid = dto.getAviaProduct().getPersonUids().iterator().next();
@@ -52,16 +51,12 @@ public abstract class BookingMapper {
         }
     }
 
-    @Named("mapStringToUuid")
-    protected UUID mapStringToUuid(String value) {
-        return value != null ? UUID.fromString(value) : null;
-    }
-
     @Named("mapAviaProductToList")
     protected List<ProductEntity> mapAviaProductToList(com.du.besttrip.ordersb2c.avia.model.AviaProductDto aviaProduct) {
         if (aviaProduct == null) {
             return Collections.emptyList();
         }
-        return Collections.singletonList(aviaProductMapper.toEntity(aviaProduct));
+        ProductEntity productEntity = aviaProductMapper.toEntity(aviaProduct);
+        return Collections.singletonList(productEntity);
     }
 }

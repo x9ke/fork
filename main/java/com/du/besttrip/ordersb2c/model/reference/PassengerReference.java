@@ -6,7 +6,6 @@ import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Objects;
 import java.util.UUID;
 
 @Embeddable
@@ -15,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class TravelerReference implements Serializable {
+public class PassengerReference implements Serializable {
     @Serial
     private static final long serialVersionUID = 0L;
     @Column(nullable = false)

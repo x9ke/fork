@@ -1,15 +1,13 @@
 package com.du.besttrip.ordersb2c.mapper;
 
 import com.du.besttrip.ordersb2c.avia.model.AviaProductDto;
-import com.du.besttrip.ordersb2c.avia.model.CityDto;
 import com.du.besttrip.ordersb2c.avia.model.TicketDto;
 import com.du.besttrip.ordersb2c.enums.AccountingProviderAndService;
 import com.du.besttrip.ordersb2c.enums.ProductStatus;
-import com.du.besttrip.ordersb2c.model.ProductEntity;
+import com.du.besttrip.ordersb2c.enums.ProviderAndService;
 import com.du.besttrip.ordersb2c.model.product.avia.AviaProductEntity;
 import com.du.besttrip.ordersb2c.model.product.avia.AviaTicketEntity;
 import com.du.besttrip.ordersb2c.model.product.avia.FlightLegEntity;
-import com.du.besttrip.ordersb2c.model.reference.CityReference;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,11 +17,10 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring", uses = {AviaFlightMapper.class, ReferenceMapper.class})
 public abstract class AviaProductMapper {
 
+    //TODO
     @Autowired
     protected TicketMapper ticketMapper;
 
-    @Mapping(target = "externalOrderId", source = "externalOrderId")
-    @Mapping(target = "externalBillingNumber", source = "externalBillingNumber")
     @Mapping(target = "complexRoute", source = "isComplexRoute")
     @Mapping(target = "status", source = "status", qualifiedByName = "mapProductStatus")
     @Mapping(target = "provider", source = "provider", qualifiedByName = "mapProvider")
@@ -31,7 +28,7 @@ public abstract class AviaProductMapper {
     @Mapping(target = "flight", source = "flight")
     @Mapping(target = "reservationInfo", ignore = true)
     @Mapping(target = "cities", source = "cities")
-    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "id", source = "uid")
     @Mapping(target = "version", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
@@ -48,87 +45,47 @@ public abstract class AviaProductMapper {
                 leg.getSegments().forEach(segment -> segment.setLeg(leg));
             });
 
-            // Маппинг билетов к legs
             if (dto.getTickets() != null && !dto.getTickets().isEmpty()) {
-                List<FlightLegEntity> legs = entity.getFlight().getLegs();
+                List<FlightLegEntity> allLegs = entity.getFlight().getLegs();
+                Map<UUID, FlightLegEntity> legsMap = allLegs.stream()
+                        .collect(Collectors.toMap(FlightLegEntity::getId, leg -> leg));
+
 
                 for (TicketDto ticketDto : dto.getTickets()) {
                     AviaTicketEntity ticketEntity = ticketMapper.toEntity(ticketDto, dto.getProvider());
 
-                    // Определяем к каким legs относится билет
-                    Set<FlightLegEntity> targetLegs = determineLegsForTicket(ticketDto, legs);
+                    Set<FlightLegEntity> targetLegs = determineLegsForTicket(ticketDto, legsMap);
 
-                    // Связываем билет с legs
+                    ticketEntity.getLegs().clear();
+                    ticketEntity.getLegs().addAll(targetLegs);
+
                     for (FlightLegEntity leg : targetLegs) {
-                        leg.addTicket(ticketEntity);
+                        leg.getTickets().add(ticketEntity);
                     }
 
-                    // Устанавливаем связи для пассажиров
                     if (ticketEntity.getPassengers() != null) {
                         ticketEntity.getPassengers().forEach(passenger -> {
                             passenger.setTicket(ticketEntity);
-                            if (passenger.getExternalId() == null && ticketDto.getPnr() != null) {
-                                passenger.setExternalId(ticketDto.getPnr() + "_" + UUID.randomUUID().toString().substring(0, 8));
-                            }
-                            if (passenger.getTicketNumber() == null) {
-                                passenger.setTicketNumber(generateTicketNumber());
-                            }
                         });
                     }
-
-                    if (ticketEntity.getTicketNumber() == null) {
-                        ticketEntity.setTicketNumber(generateTicketNumber());
-                    }
                 }
             }
         }
     }
 
-    private Set<FlightLegEntity> determineLegsForTicket(TicketDto ticketDto, List<FlightLegEntity> legs) {
+    private Set<FlightLegEntity> determineLegsForTicket(TicketDto ticketDto, Map<UUID, FlightLegEntity> legsMap) {
         Set<FlightLegEntity> result = new HashSet<>();
 
-        // Логика определения legs по ticketWay
-        if (ticketDto.getTicketWay() != null && !legs.isEmpty()) {
-            switch (ticketDto.getTicketWay()) {
-                case WAY_THERE -> {
-                    if (!legs.isEmpty()) result.add(legs.get(0));
-                }
-                case WAY_BACK -> {
-                    if (legs.size() > 1) result.add(legs.get(legs.size() - 1));
-                }
-                case ROUND_TRIP -> {
-                    if (!legs.isEmpty()) result.add(legs.get(0));
-                    if (legs.size() > 1) result.add(legs.get(legs.size() - 1));
-                }
-                case COMPLEX_ROUTE -> result.addAll(legs);
+        if (ticketDto.getLegUids() != null && !ticketDto.getLegUids().isEmpty()) {
+            for (String legUidStr : ticketDto.getLegUids()) {
+                    UUID legUid = UUID.fromString(legUidStr);
+                    FlightLegEntity leg = legsMap.get(legUid);
+                    if (leg != null) {
+                        result.add(leg);
+                    }
             }
         }
-
-        // Если не определили - связываем со всеми legs
-        if (result.isEmpty()) {
-            result.addAll(legs);
-        }
-
         return result;
-    }
-
-    private String generateTicketNumber() {
-        return "TKT" + System.currentTimeMillis() + UUID.randomUUID().toString().substring(0, 4).toUpperCase();
-    }
-
-    public abstract List<AviaProductDto> toDtoList(List<ProductEntity> entities);
-
-    @Named("mapCitiesToDto")
-    protected Set<CityDto> mapCitiesToDto(Set<CityReference> cities) {
-        if (cities == null) return new java.util.HashSet<>();
-        return cities.stream()
-                .map(city -> {
-                    CityDto dto = new CityDto();
-                    dto.setUid(UUID.randomUUID());
-                    dto.setName(city.name());
-                    return dto;
-                })
-                .collect(Collectors.toSet());
     }
 
     @Named("mapProductStatus")
@@ -159,6 +116,7 @@ public abstract class AviaProductMapper {
             case VIPSERVICE_AVIA -> com.du.besttrip.ordersb2c.enums.ProviderAndService.VIPSERVICE_AVIA;
             case IWAY_TRANSFER -> com.du.besttrip.ordersb2c.enums.ProviderAndService.IWAY_TRANSFER;
             case DADATA_DICTIONARY -> com.du.besttrip.ordersb2c.enums.ProviderAndService.MYAGENT_AVIA;
+            case UNKNOWN -> ProviderAndService.UNKNOWN;
         };
     }
 
@@ -174,6 +132,7 @@ public abstract class AviaProductMapper {
             case VIPSERVICE_AVIA -> AccountingProviderAndService.VIPSERVICE_AVIA;
             case IWAY_TRANSFER -> AccountingProviderAndService.IWAY_TRANSFER;
             case DADATA_DICTIONARY -> AccountingProviderAndService.DADATA_DICTIONARY;
+            case UNKNOWN -> AccountingProviderAndService.UNKNOWN;
         };
     }
 }

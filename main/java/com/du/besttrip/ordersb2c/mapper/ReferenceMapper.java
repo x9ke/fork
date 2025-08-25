@@ -12,6 +12,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface ReferenceMapper {
 
+    //TODO нужно буде добавить нормальный code
     AviaCarrierReference toEntity(SimpleTextReferenceDto dto);
     @Mapping(target = "code", source = "name")
     AirportReference toEntityFromAirport(SimpleTextReferenceDto dto);

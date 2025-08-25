@@ -14,6 +14,7 @@ public interface AviaFlightMapper {
     @Mapping(target = "validatingCarrier", source = "validatingCarrier")
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "version", ignore = true)
+    //TODO нету тарифа
     @Mapping(target = "tariff", constant = "BEST_LIGHT")
     AviaFlightEntity toEntity(AviaFlightDto dto);
 

@@ -10,6 +10,7 @@ public enum AccountingProviderAndService {
 
     // Пока не используются
     MYAGENT_HOTEL,
+    DADATA_DICTIONARY,
     // Кастомные услуги
-    DADATA_DICTIONARY
+    UNKNOWN
 }

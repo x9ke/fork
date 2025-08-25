@@ -25,7 +25,7 @@
             <column name="files" type="JSONB">
                 <constraints nullable="false"/>
             </column>
-            <column name="traveler_uids" type="UUID[]">
+            <column name="passenger_uids" type="UUID[]">
                 <constraints nullable="false"/>
             </column>
         </createTable>

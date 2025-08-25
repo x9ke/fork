@@ -8,5 +8,5 @@ import java.util.UUID;
 public interface OrdersService {
     void saveOrder(CreateBookingResponseDto dto);
 
-    OrderDto getOrderByUid(UUID orderUid, UUID userUuid);
+    OrderDto getOrderByUid(UUID orderUid);
 }

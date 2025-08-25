@@ -18,13 +18,7 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="ticket_id" type="UUID"/>
-            <column name="traveler_id" type="UUID"/>
-            <column name="external_id" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="ticket_number" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
+            <column name="passenger_id" type="UUID"/>
         </createTable>
 
         <addForeignKeyConstraint

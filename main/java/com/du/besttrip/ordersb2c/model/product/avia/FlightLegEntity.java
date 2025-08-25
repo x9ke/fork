@@ -15,15 +15,7 @@ import java.util.*;
 @Setter
 @NoArgsConstructor
 @Accessors(chain = true)
-public class FlightLegEntity {
-
-    @Id
-    @Column(name = "id", nullable = false)
-    private UUID id; // Ручное управление ID
-
-    @Version
-    @Column(name = "version", nullable = false)
-    private Long version = 1L;
+public class FlightLegEntity extends BaseEntity {
 
     @Column(nullable = false)
     private Integer durationMinutes;
@@ -34,14 +26,8 @@ public class FlightLegEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private AviaFlightEntity flight;
 
-    @ManyToMany(cascade = {
-            CascadeType.PERSIST,
-            CascadeType.MERGE
-    })
-    @JoinTable(name = "leg_ticket",
-            joinColumns = @JoinColumn(name = "leg_id"),
-            inverseJoinColumns = @JoinColumn(name = "ticket_id")
-    )
+    // FlightLegEntity НЕ владеет отношением, но должен каскадно сохранять билеты
+    @ManyToMany(mappedBy = "legs", cascade = CascadeType.ALL)
     private Set<AviaTicketEntity> tickets = new HashSet<>();
 
     public void addTicket(AviaTicketEntity ticket) {

@@ -1079,6 +1079,7 @@ components:
         - VIPSERVICE_AVIA
         - IWAY_TRANSFER
         - DADATA_DICTIONARY
+        - UNKNOWN
 
     PersonEventStatus:
       type: string
@@ -1110,6 +1111,7 @@ components:
       type: object
       required:
         - uid
+        - number
         - status
         - ticketPrice
         - passengers
@@ -1117,6 +1119,8 @@ components:
         uid:
           type: string
           format: uuid
+        number:
+          type: string
         status:
           $ref: '#/components/schemas/AviaTicketStatus'
         nextStatusInProcess:

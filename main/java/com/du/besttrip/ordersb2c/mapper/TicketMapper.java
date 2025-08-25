@@ -18,7 +18,7 @@ public interface TicketMapper {
     @Mapping(target = "externalId", source = "externalId", qualifiedByName = "mapExternalId")
     @Mapping(target = "ticketPrice", source = "ticketPrice")
     @Mapping(target = "priceWasChanged", source = "priceWasChanged")
-    @Mapping(target = "ticketNumber", ignore = true)
+    @Mapping(target = "ticketNumber", source = "number")
     @Mapping(target = "files", expression = "java(new java.util.HashSet<>())")
     @Mapping(target = "passengers", source = "passengers")
     @Mapping(target = "legs", expression = "java(new java.util.HashSet<>())")
@@ -29,25 +29,12 @@ public interface TicketMapper {
     @Mapping(target = "modifiedBy", ignore = true)
     AviaTicketEntity toEntity(TicketDto dto, @Context ProviderAndService provider);
 
-    // Overloaded method without provider (for backwards compatibility)
-    default AviaTicketEntity toEntity(TicketDto dto) {
-        return toEntity(dto, ProviderAndService.MYAGENT_AVIA);
-    }
-
     @Named("mapExternalId")
     default com.du.besttrip.ordersb2c.model.product.avia.jsonb.TicketExternalId mapExternalId(
             com.du.besttrip.ordersb2c.avia.model.TicketExternalIdDto dto,
             @Context ProviderAndService provider) {
         TicketExternalIdMapper mapper = org.mapstruct.factory.Mappers.getMapper(TicketExternalIdMapper.class);
         return mapper.toEntity(dto, provider);
-    }
-
-    @AfterMapping
-    default void afterMapping(@MappingTarget AviaTicketEntity entity, TicketDto dto) {
-        // Set bidirectional relationship for passengers
-        if (entity.getPassengers() != null) {
-            entity.getPassengers().forEach(passenger -> passenger.setTicket(entity));
-        }
     }
 
     @Named("mapTicketStatus")

@@ -3,9 +3,7 @@ package com.du.besttrip.ordersb2c.mapper;
 import com.du.besttrip.ordersb2c.avia.model.DurationDto;
 import com.du.besttrip.ordersb2c.avia.model.FlightLegDto;
 import com.du.besttrip.ordersb2c.model.product.avia.FlightLegEntity;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
+import org.mapstruct.*;
 
 @Mapper(componentModel = "spring", uses = {AviaSegmentMapper.class})
 public interface AviaLegMapper {
@@ -14,7 +12,7 @@ public interface AviaLegMapper {
     @Mapping(target = "id", source = "uid")
     @Mapping(target = "version", ignore = true)
     @Mapping(target = "flight", ignore = true)
-    @Mapping(target = "tickets",  ignore = true)
+    @Mapping(target = "tickets", ignore = true)
     FlightLegEntity toEntity(FlightLegDto dto);
 
     @Named("legDurationToMinutes")

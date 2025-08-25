@@ -24,6 +24,8 @@ tags:
     description: API общего назначения
   - name: Geo
     description: Geo API
+  - name: Passenger
+    description: Passenger Api
 
 paths:
   /auth/loginWeb:
@@ -1186,6 +1188,34 @@ paths:
               schema:
                 $ref: '#/components/schemas/ServerErrorResponse'
 
+  /passenger/createPassenger:
+    post:
+      tags: [ Passenger ]
+      summary: Сохранение пассажира
+      description: Сохраняем пассажира командировки.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePassengerRequest'
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+        '500':
+          description: INTERNAL_SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+
 components:
   schemas:
     AuthRequest:
@@ -1276,6 +1306,134 @@ components:
         password:
           type: string
           description: Новый пароль
+
+    CreatePassengerRequest:
+      type: object
+      required:
+        - orderId
+        - passenger
+      properties:
+        orderId:
+          type: string
+          format: uuid
+          description: id заказа
+        passenger:
+          type: array
+          items:
+            $ref: '#/components/schemas/BookingPassengerDto'
+
+    BookingPassengerDto:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - birthDate
+        - gender
+        - document
+        - citizenship
+        - type
+        - personHasNoMiddleName
+      properties:
+        firstName:
+          type: string
+          minLength: 2
+          maxLength: 40
+          pattern: "^(?![.-])(?!.*[.-]{2})(?!.*[.-]$)[A-Za-zА-Яа-яёЁ.\\-]+$"
+          description: Имя пассажира
+        middleName:
+          type: string
+          minLength: 2
+          maxLength: 40
+          pattern: "^(?![.-])(?!.*[.-]{2})(?!.*[.-]$)[A-Za-zА-Яа-яёЁ.\\-]+$"
+          description: Отчество пассажира (обязательное, если personHasNoMiddleName = false)
+        personHasNoMiddleName:
+          type: boolean
+          default: false
+          description: true — если отчество отсутствует
+        lastName:
+          type: string
+          minLength: 2
+          maxLength: 40
+          pattern: "^(?![.-])(?!.*[.-]{2})(?!.*[.-]$)[A-Za-zА-Яа-яёЁ.\\-]+$"
+          description: Фамилия пассажира
+        birthDate:
+          type: string
+          format: date
+          description: Дата рождения пассажира (YYYY-MM-DD)
+        gender:
+          type: string
+          enum: [ MALE, FEMALE ]
+          description: Пол пассажира
+        document:
+          $ref: '#/components/schemas/PassengerDocumentInfoDto'
+        citizenship:
+          $ref: '#/components/schemas/CitizenshipDto'
+        type:
+          $ref: '#/components/schemas/PassengerType'
+        aviaBonusCards:
+          type: array
+          items:
+            $ref: '#/components/schemas/AviaBonusCardDto'
+        additionalBaggagePieces:
+          type: integer
+          minimum: 0
+
+    PassengerDocumentInfoDto:
+      type: object
+      required:
+        - type
+        - number
+        - issuedDate
+      properties:
+        type:
+          type: string
+          enum: [ RUSSIAN_PASSPORT, RUSSIAN_FOREIGN_PASSPORT ]
+        number:
+          type: string
+          description: |
+            Формат зависит от типа:
+            - RUSSIAN_PASSPORT: XXXX XXXXXX
+            - RUSSIAN_FOREIGN_PASSPORT: XX XXXXXXX
+        issuedDate:
+          type: string
+          format: date
+          description: Дата выдачи документа (YYYY-MM-DD)
+        expiryDate:
+          type: string
+          format: date
+          description: |
+            Дата окончания действия документа.
+            Обязательна, если type = RUSSIAN_FOREIGN_PASSPORT
+
+    CitizenshipDto:
+      type: object
+      required:
+        - uid
+        - name
+      properties:
+        uid:
+          type: string
+          format: uuid
+        name:
+          type: string
+
+    PassengerType:
+      type: string
+      enum: [ ADULT, CHILD, INFANT ]
+
+    AviaBonusCardDto:
+      type: object
+      required:
+        - number
+        - iataCode
+      properties:
+        number:
+          type: string
+          description: Номер бонусной карты
+        iataCode:
+          type: string
+          pattern: '^[A-Z]{2}$'
+          description: IATA-код авиакомпании (2 буквы)
 
     UpdatePasswordRequest:
       type: object

@@ -13,7 +13,7 @@ public record OrderDto(
         OrderStatus status,
         Set<FileReference> files,
         UUID personUid,
-        Set<UUID> travelerUids,
+        Set<UUID> passengerUids,
         List<AviaProductDto> products
 ) {
 }

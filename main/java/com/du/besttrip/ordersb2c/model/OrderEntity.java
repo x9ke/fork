@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.annotations.Type;
 import org.hibernate.type.SqlTypes;
 
 import java.util.*;
@@ -35,7 +34,7 @@ public class OrderEntity extends AuditableEntity {
 
     @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(columnDefinition = "uuid[]", nullable = false)
-    private Set<UUID> travelerUids = new HashSet<>();
+    private Set<UUID> passengerUids = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "order")
     private List<ProductEntity> products = new ArrayList<>();
